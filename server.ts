@@ -21,13 +21,21 @@ const layout = (content: string) => `
         </div>
 
         <div class="lg:col-span-2 space-y-6 order-1 lg:order-2">
-            <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-green-500">
-                <h2 class="text-xl font-bold mb-4 text-slate-800">Round Requirements</h2>
+            <div class="bg-indigo-900 text-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-xl font-bold mb-4 border-b border-indigo-400 pb-2">Round Requirements</h2>
                 <ol class="space-y-2 text-slate-700">
                     <li class="p-2 bg-slate-50 rounded border-s-2 border-slate-300"><span class="font-bold mr-2">1.</span> 2 Aces and 1 Set of 3</li>
                     <li class="p-2 bg-slate-50 rounded border-s-2 border-slate-300"><span class="font-bold mr-2">2.</span> 2 Sets of 3</li>
                     <li class="p-2 bg-slate-50 rounded border-s-2 border-slate-300"><span class="font-bold mr-2">3.</span> 1 Set of 3 and 1 Run of 4</li>
                     <li class="p-2 bg-slate-50 rounded border-s-2 border-slate-300"><span class="font-bold mr-2">4.</span> 2 Runs of 4</li>
+                    <li class="p-2 bg-slate-50 rounded border-s-2 border-slate-300"><span class="font-bold mr-2">5.</span> 3 sets of 3</li>
+                    <li class="p-2 bg-slate-50 rounded border-s-2 border-slate-300"><span class="font-bold mr-2">6.</span> 1 run of 4. 2 sets of 3</li>
+                    <li class="p-2 bg-slate-50 rounded border-s-2 border-slate-300"><span class="font-bold mr-2">7.</span> 2 run of 4. 1 sets of 3</li>
+                    <li class="p-2 bg-slate-50 rounded border-s-2 border-slate-300"><span class="font-bold mr-2">8.</span> 1 run of 5. 1 run of 6</li>
+                    <li class="p-2 bg-slate-50 rounded border-s-2 border-slate-300"><span class="font-bold mr-2">9.</span> 4 sets 3</li>
+                    <li class="p-2 bg-slate-50 rounded border-s-2 border-slate-300"><span class="font-bold mr-2">10.</span> 1 run of 7. 1 set of 3</li>
+                    <li class="p-2 bg-slate-50 rounded border-s-2 border-slate-300"><span class="font-bold mr-2">11.</span> 3 runs of 4</li>
+                    <li class="p-2 bg-slate-50 rounded border-s-2 border-slate-300"><span class="font-bold mr-2">12.</span> 1 runs of 4. 1 run of 8</li>
                 </ol>
             </div>
 
