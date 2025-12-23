@@ -13,21 +13,33 @@ const layout = (content: string) => `
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-100 min-h-screen p-4">
-    <div class="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="lg:col-span-2 bg-white shadow-lg rounded-lg p-6">
+    <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-6">
+        
+        <div class="lg:col-span-2 bg-white shadow-lg rounded-lg p-6 order-2 lg:order-1">
             <h1 class="text-3xl font-bold text-indigo-600 mb-6 text-center">Concentration Rummy</h1>
             ${content}
         </div>
-        <div class="bg-indigo-900 text-white p-6 rounded-lg shadow-lg h-fit">
-            <h2 class="text-xl font-bold mb-4 border-b border-indigo-400 pb-2">Scoring Reference</h2>
-            <ul class="space-y-3 text-sm">
-                <li class="flex justify-between"><span>Aces</span> <span class="font-mono bg-indigo-800 px-2 rounded">15 pts</span></li>
-                <li class="flex justify-between"><span>Face Cards (K, Q, J)</span> <span class="font-mono bg-indigo-800 px-2 rounded">10 pts</span></li>
-                <li class="flex justify-between"><span>10s</span> <span class="font-mono bg-indigo-800 px-2 rounded">10 pts</span></li>
-                <li class="flex justify-between"><span>2 - 9</span> <span class="font-mono bg-indigo-800 px-2 rounded">5 pts</span></li>
-            </ul>
-            <div class="mt-6 p-3 bg-indigo-800 rounded text-xs italic">
-                Note: In most variations, points for cards remaining in your hand are <strong>subtracted</strong>, while cards melded are <strong>added</strong>.
+
+        <div class="lg:col-span-2 space-y-6 order-1 lg:order-2">
+            <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-green-500">
+                <h2 class="text-xl font-bold mb-4 text-slate-800">Round Requirements</h2>
+                <ol class="space-y-2 text-slate-700">
+                    <li class="p-2 bg-slate-50 rounded border-s-2 border-slate-300"><span class="font-bold mr-2">1.</span> 2 Aces and 1 Set of 3</li>
+                    <li class="p-2 bg-slate-50 rounded border-s-2 border-slate-300"><span class="font-bold mr-2">2.</span> 2 Sets of 3</li>
+                    <li class="p-2 bg-slate-50 rounded border-s-2 border-slate-300"><span class="font-bold mr-2">3.</span> 1 Set of 3 and 1 Run of 4</li>
+                    <li class="p-2 bg-slate-50 rounded border-s-2 border-slate-300"><span class="font-bold mr-2">4.</span> 2 Runs of 4</li>
+                </ol>
+            </div>
+
+            <div class="bg-indigo-900 text-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-xl font-bold mb-4 border-b border-indigo-400 pb-2">Card Point Values</h2>
+                <ul class="space-y-3 text-sm">
+                    <li class="flex justify-between"><span>2s</span> <span class="font-mono bg-indigo-800 px-2 rounded">20 pts</span></li>
+                    <li class="flex justify-between"><span>Aces</span> <span class="font-mono bg-indigo-800 px-2 rounded">20 pts</span></li>
+                    <li class="flex justify-between"><span>Face Cards (K, Q, J)</span> <span class="font-mono bg-indigo-800 px-2 rounded">10 pts</span></li>
+                    <li class="flex justify-between"><span>10s</span> <span class="font-mono bg-indigo-800 px-2 rounded">10 pts</span></li>
+                    <li class="flex justify-between"><span>3 - 9</span> <span class="font-mono bg-indigo-800 px-2 rounded">5 pts</span></li>
+                </ul>
             </div>
         </div>
     </div>
