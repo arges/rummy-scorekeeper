@@ -2,6 +2,7 @@ import { Hono } from "https://deno.land/x/hono@v3.11.7/mod.ts";
 import { serve } from "https://deno.land/std@0.208.0/http/server.ts";
 
 const app = new Hono();
+const kv = await Deno.openKv(); // Use Deno's built-in database for statefulness
 
 const layout = (content: string) => `
 <!DOCTYPE html>
@@ -15,141 +16,143 @@ const layout = (content: string) => `
 <body class="bg-slate-100 min-h-screen p-4">
     <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-6">
         
-        <div class="lg:col-span-2 bg-white shadow-lg rounded-lg p-6 order-2 lg:order-1">
-            <h1 class="text-3xl font-bold text-indigo-600 mb-6 text-center">Concentration Rummy</h1>
-            ${content}
-        </div>
-
         <div class="lg:col-span-2 space-y-6 order-1 lg:order-2">
             <div class="bg-indigo-900 text-white p-6 rounded-lg shadow-lg">
-                <h2 class="text-xl font-bold mb-4 border-b border-indigo-400 pb-2">Round Requirements</h2>
-                <ol class="space-y-2 text-slate-700">
-                    <li class="p-2 bg-slate-50 rounded border-s-2 border-slate-300"><span class="font-bold mr-2">1.</span> 2 Aces and 1 Set of 3</li>
-                    <li class="p-2 bg-slate-50 rounded border-s-2 border-slate-300"><span class="font-bold mr-2">2.</span> 2 Sets of 3</li>
-                    <li class="p-2 bg-slate-50 rounded border-s-2 border-slate-300"><span class="font-bold mr-2">3.</span> 1 Set of 3 and 1 Run of 4</li>
-                    <li class="p-2 bg-slate-50 rounded border-s-2 border-slate-300"><span class="font-bold mr-2">4.</span> 2 Runs of 4</li>
-                    <li class="p-2 bg-slate-50 rounded border-s-2 border-slate-300"><span class="font-bold mr-2">5.</span> 3 sets of 3</li>
-                    <li class="p-2 bg-slate-50 rounded border-s-2 border-slate-300"><span class="font-bold mr-2">6.</span> 1 run of 4. 2 sets of 3</li>
-                    <li class="p-2 bg-slate-50 rounded border-s-2 border-slate-300"><span class="font-bold mr-2">7.</span> 2 run of 4. 1 sets of 3</li>
-                    <li class="p-2 bg-slate-50 rounded border-s-2 border-slate-300"><span class="font-bold mr-2">8.</span> 1 run of 5. 1 run of 6</li>
-                    <li class="p-2 bg-slate-50 rounded border-s-2 border-slate-300"><span class="font-bold mr-2">9.</span> 4 sets 3</li>
-                    <li class="p-2 bg-slate-50 rounded border-s-2 border-slate-300"><span class="font-bold mr-2">10.</span> 1 run of 7. 1 set of 3</li>
-                    <li class="p-2 bg-slate-50 rounded border-s-2 border-slate-300"><span class="font-bold mr-2">11.</span> 3 runs of 4</li>
-                    <li class="p-2 bg-slate-50 rounded border-s-2 border-slate-300"><span class="font-bold mr-2">12.</span> 1 runs of 4. 1 run of 8</li>
+                <h2 class="text-xl font-bold mb-4 border-b border-indigo-400 pb-2 text-indigo-200">Round Requirements</h2>
+                <ol class="space-y-1 text-sm">
+                    <li class="p-2 bg-indigo-800 rounded border-s-4 border-green-400"><span class="font-bold mr-2">1.</span> 2 Aces and 1 Set of 3</li>
+                    <li class="p-2 bg-indigo-800 rounded border-s-4 border-green-400"><span class="font-bold mr-2">2.</span> 2 Sets of 3</li>
+                    <li class="p-2 bg-indigo-800 rounded border-s-4 border-green-400"><span class="font-bold mr-2">3.</span> 1 Set of 3 and 1 Run of 4</li>
+                    <li class="p-2 bg-indigo-800 rounded border-s-4 border-green-400"><span class="font-bold mr-2">4.</span> 2 Runs of 4</li>
+                    <li class="p-2 bg-indigo-800 rounded border-s-4 border-green-400"><span class="font-bold mr-2">5.</span> 3 Sets of 3</li>
+                    <li class="p-2 bg-indigo-800 rounded border-s-4 border-green-400"><span class="font-bold mr-2">6.</span> 1 Run of 4, 2 Sets of 3</li>
+                    <li class="p-2 bg-indigo-800 rounded border-s-4 border-green-400"><span class="font-bold mr-2">7.</span> 2 Runs of 4, 1 Set of 3</li>
+                    <li class="p-2 bg-indigo-800 rounded border-s-4 border-green-400"><span class="font-bold mr-2">8.</span> 1 Run of 5, 1 Run of 6</li>
+                    <li class="p-2 bg-indigo-800 rounded border-s-4 border-green-400"><span class="font-bold mr-2">9.</span> 4 Sets of 3</li>
+                    <li class="p-2 bg-indigo-800 rounded border-s-4 border-green-400"><span class="font-bold mr-2">10.</span> 1 Run of 7, 1 Set of 3</li>
+                    <li class="p-2 bg-indigo-800 rounded border-s-4 border-green-400"><span class="font-bold mr-2">11.</span> 3 Runs of 4</li>
+                    <li class="p-2 bg-indigo-800 rounded border-s-4 border-green-400"><span class="font-bold mr-2">12.</span> 1 Run of 4, 1 Run of 8</li>
                 </ol>
             </div>
 
-            <div class="bg-indigo-900 text-white p-6 rounded-lg shadow-lg">
-                <h2 class="text-xl font-bold mb-4 border-b border-indigo-400 pb-2">Card Point Values</h2>
-                <ul class="space-y-3 text-sm">
-                    <li class="flex justify-between"><span>2s</span> <span class="font-mono bg-indigo-800 px-2 rounded">20 pts</span></li>
-                    <li class="flex justify-between"><span>Aces</span> <span class="font-mono bg-indigo-800 px-2 rounded">20 pts</span></li>
-                    <li class="flex justify-between"><span>Face Cards (K, Q, J)</span> <span class="font-mono bg-indigo-800 px-2 rounded">10 pts</span></li>
-                    <li class="flex justify-between"><span>10s</span> <span class="font-mono bg-indigo-800 px-2 rounded">10 pts</span></li>
+            <div class="bg-indigo-950 text-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-xl font-bold mb-4 border-b border-indigo-500 pb-2">Card Point Values</h2>
+                <ul class="space-y-2 text-sm">
+                    <li class="flex justify-between"><span>2s & Aces</span> <span class="font-mono bg-indigo-800 px-2 rounded">20 pts</span></li>
+                    <li class="flex justify-between"><span>Face Cards & 10s</span> <span class="font-mono bg-indigo-800 px-2 rounded">10 pts</span></li>
                     <li class="flex justify-between"><span>3 - 9</span> <span class="font-mono bg-indigo-800 px-2 rounded">5 pts</span></li>
                 </ul>
             </div>
         </div>
+
+        <div class="lg:col-span-2 bg-white shadow-xl rounded-lg p-4 md:p-6 order-2 lg:order-1">
+            <h1 class="text-3xl font-bold text-indigo-600 mb-6 text-center">Scoreboard</h1>
+            ${content}
+        </div>
+
     </div>
 </body>
 </html>
 `;
 
-let gameState = {
-  players: [] as string[],
-  rounds: [] as number[][],
-};
+// Helper: Get data from DB
+const getGame = async () => (await kv.get(["game_state"])).value || { players: [], rounds: [] };
 
-// Step 1: Ask for player count
 app.get("/", (c) => {
-  return c.html(layout(`
-    <form action="/names" method="POST" class="space-y-4">
-        <label class="block text-lg font-medium">How many players?</label>
-        <input type="number" name="count" min="1" max="8" value="2" class="border p-2 rounded w-full">
-        <button type="submit" class="bg-indigo-500 text-white px-4 py-2 rounded w-full">Next: Set Names</button>
-    </form>
-  `));
+    return c.html(layout(`
+        <form action="/names" method="POST" class="space-y-4">
+            <label class="block text-lg font-medium text-slate-700">How many players are joining?</label>
+            <input type="number" name="count" min="1" max="8" value="2" class="border-2 border-indigo-100 p-3 rounded-lg w-full text-lg">
+            <button type="submit" class="bg-indigo-600 text-white px-4 py-3 rounded-lg w-full font-bold shadow-md">Next: Set Names</button>
+        </form>
+    `));
 });
 
-// Step 2: Edit Names
 app.post("/names", async (c) => {
-  const body = await c.req.parseBody();
-  const count = parseInt(body.count as string);
-  const inputs = Array.from({ length: count }, (_, i) => `
-    <input type="text" name="player_${i}" value="Player ${i+1}" class="border p-2 rounded w-full mb-2" required>
-  `).join('');
+    const body = await c.req.parseBody();
+    const count = parseInt(body.count as string);
+    const inputs = Array.from({ length: count }, (_, i) => `
+        <input type="text" name="player_${i}" placeholder="Player ${i+1}" class="border-2 border-slate-200 p-3 rounded-lg w-full mb-3 shadow-sm focus:border-indigo-500 outline-none" required>
+    `).join('');
 
-  return c.html(layout(`
-    <form action="/start" method="POST" class="space-y-4">
-        <h2 class="text-xl font-bold">Edit Player Names</h2>
-        ${inputs}
-        <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded w-full">Start Scoring</button>
-    </form>
-  `));
+    return c.html(layout(`
+        <form action="/start" method="POST" class="space-y-4">
+            <h2 class="text-xl font-bold text-slate-800">Who is playing?</h2>
+            ${inputs}
+            <button type="submit" class="bg-green-600 text-white px-4 py-3 rounded-lg w-full font-bold shadow-md">Start Game</button>
+        </form>
+    `));
 });
 
-// Step 3: Initialize Game
 app.post("/start", async (c) => {
-  const body = await c.req.parseBody();
-  gameState.players = Object.keys(body)
-    .filter(k => k.startsWith('player_'))
-    .map(k => body[k] as string);
-  gameState.rounds = [];
-  return c.redirect("/game");
+    const body = await c.req.parseBody();
+    const players = Object.keys(body).filter(k => k.startsWith('player_')).map(k => body[k] as string);
+    await kv.set(["game_state"], { players, rounds: [] }); // Save to DB
+    return c.redirect("/game");
 });
 
-// Game Dashboard
-app.get("/game", (c) => {
-  if (gameState.players.length === 0) return c.redirect("/");
-  const totals = gameState.players.map((_, i) => gameState.rounds.reduce((sum, r) => sum + r[i], 0));
+app.get("/game", async (c) => {
+    const gameState = await getGame();
+    if (gameState.players.length === 0) return c.redirect("/");
+    
+    const totals = gameState.players.map((_, i) => 
+        gameState.rounds.reduce((sum, r) => sum + (Number(r[i]) || 0), 0)
+    );
 
-  return c.html(layout(`
-    <div class="overflow-x-auto mb-6">
-        <table class="w-full text-left border-collapse">
-            <thead>
-                <tr class="bg-slate-200">
-                    <th class="p-2 border">Round</th>
-                    ${gameState.players.map(p => `<th class="p-2 border font-bold">${p}</th>`).join('')}
-                </tr>
-            </thead>
-            <tbody>
-                ${gameState.rounds.map((round, idx) => `
-                    <tr>
-                        <td class="p-2 border text-slate-500">#${idx + 1}</td>
-                        ${round.map(s => `<td class="p-2 border">${s}</td>`).join('')}
+    return c.html(layout(`
+        <div class="overflow-x-auto mb-6 rounded-lg border border-slate-200">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-800 text-white">
+                        <th class="p-3 border-b text-xs uppercase">Rnd</th>
+                        ${gameState.players.map(p => `<th class="p-3 border-b font-bold truncate">${p}</th>`).join('')}
                     </tr>
-                `).join('')}
-            </tbody>
-            <tr class="bg-indigo-50 font-bold text-lg">
-                <td class="p-2 border">TOTAL</td>
-                ${totals.map(t => `<td class="p-2 border text-indigo-700">${t}</td>`).join('')}
-            </tr>
-        </table>
-    </div>
+                </thead>
+                <tbody class="text-slate-700">
+                    ${gameState.rounds.map((round, idx) => `
+                        <tr class="${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50'}">
+                            <td class="p-3 border-b text-slate-400 font-mono text-xs">#${idx + 1}</td>
+                            ${round.map(s => `<td class="p-3 border-b">${s}</td>`).join('')}
+                        </tr>
+                    `).join('')}
+                </tbody>
+                <tfoot class="bg-indigo-50 font-black text-lg">
+                    <tr>
+                        <td class="p-3 border-t">SUM</td>
+                        ${totals.map(t => `<td class="p-3 border-t text-indigo-700">${t}</td>`).join('')}
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
 
-    <form action="/add-round" method="POST" class="bg-slate-50 p-4 rounded-lg border border-slate-200">
-        <h3 class="font-bold mb-4">Enter Round Scores</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-            ${gameState.players.map((p, i) => `
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 uppercase">${p}</label>
-                    <input type="number" name="score_${i}" value="0" class="border p-2 w-full rounded focus:ring-2 focus:ring-indigo-400 outline-none">
-                </div>
-            `).join('')}
-        </div>
-        <div class="flex gap-2">
-            <button type="submit" class="flex-1 bg-indigo-600 text-white py-2 rounded font-bold">Add Round</button>
-            <a href="/" class="px-4 py-2 border border-red-200 text-red-500 rounded hover:bg-red-50 text-center">Reset</a>
-        </div>
-    </form>
-  `));
+        <form action="/add-round" method="POST" class="bg-indigo-50 p-6 rounded-xl border-2 border-indigo-200 shadow-inner">
+            <h3 class="font-bold mb-4 text-indigo-900 flex items-center">
+                <span class="bg-indigo-600 text-white rounded-full w-6 h-6 inline-flex items-center justify-center mr-2 text-xs">${gameState.rounds.length + 1}</span>
+                Enter Round Scores
+            </h3>
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                ${gameState.players.map((p, i) => `
+                    <div>
+                        <label class="block text-[10px] font-bold text-indigo-700 uppercase mb-1 truncate">${p}</label>
+                        <input type="number" name="score_${i}" value="0" class="border-2 border-white p-2 w-full rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-400 outline-none">
+                    </div>
+                `).join('')}
+            </div>
+            <div class="space-y-3">
+                <button type="submit" class="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold text-lg shadow-lg active:scale-95 transition-transform">Save Round Score</button>
+                <a href="/" onclick="return confirm('Erase everything and start a new game?')" class="block w-full text-center text-red-500 text-xs py-2 hover:underline font-medium">Reset Entire Game</a>
+            </div>
+        </form>
+    `));
 });
 
 app.post("/add-round", async (c) => {
-  const body = await c.req.parseBody();
-  const newRound = gameState.players.map((_, i) => parseInt(body[`score_${i}`] as string || "0"));
-  gameState.rounds.push(newRound);
-  return c.redirect("/game");
+    const gameState = await getGame();
+    const body = await c.req.parseBody();
+    const newRound = gameState.players.map((_, i) => parseInt(body[`score_${i}`] as string || "0"));
+    gameState.rounds.push(newRound);
+    await kv.set(["game_state"], gameState); // Persist to DB
+    return c.redirect("/game");
 });
 
 serve(app.fetch);
